@@ -1,6 +1,7 @@
 import ListNode from './components/ListNode';
 import {useState} from 'react'
 import CompleteList from './components/CompleteList';
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
 
@@ -22,14 +23,41 @@ function App() {
     event.preventDefault();
     setIndex(a=>a+1);
 
-    let obj = {
-      id:index,
-      val:value_inp
+    if(value_inp === ""){
+
+      toast.error("enter value");
+    }
+    else{
+      let obj = {
+        id:index,
+        val:value_inp
+      }
+  
+      setToDoList([...toDoList,obj]);
+  
+      setValue("");
+      toast.success("updated successfully");
     }
 
-    setToDoList([...toDoList,obj]);
+    
+  }
 
-    setValue("");
+  function editChange(id){
+
+    let newArray=[];
+
+      toDoList.forEach((value)=>{
+
+        if(value.id!==id){
+
+          newArray.push(value);
+        }
+        else{
+          setValue(value.val);
+        }
+      })
+
+      setToDoList(newArray);
   }
 
   function doneList(id){
@@ -38,7 +66,7 @@ function App() {
 
     toDoList.forEach((value)=>{
 
-      if(value.id!==id){
+      if(value.id !==id){
         newArray.push(value);
       }
       else{
@@ -65,6 +93,23 @@ function App() {
 
   }
 
+  function reverseList(id){
+
+    let newArray= [];
+
+    compList.forEach((value)=>{
+
+      if(value.id!==id){
+        newArray.push(value);
+      }
+      else{
+        setToDoList([...toDoList,value]);
+      }
+    })
+
+    setDoneList(newArray);
+  }
+
 
   function changePage(){
 
@@ -82,7 +127,7 @@ function App() {
 
   return (
     <div className="w-[100vw] h-[100vh] overflow-x-hidden overflow-y-auto ">
-
+      <div><Toaster/></div>
         
 
       <div className='w-[720px] mx-auto mt-10 bg-slate-100 shadow-lg p-4 rounded-lg'>
@@ -121,7 +166,7 @@ function App() {
                 toDoList.length===0 ? (<div className='text-lg font-semibold text-center text-stone-500'>No work alloted...</div>) :(
 
                   toDoList.map((value) => {
-                    return ( <ListNode key={value.id} value={value} doneTask={doneList}/> )
+                    return ( <ListNode key={value.id} value={value} doneTask={doneList} editChange={editChange}/> )
                   })
                 )
               }
@@ -137,10 +182,12 @@ function App() {
               <p className='text-2xl w-[100%] mb-6 text-center text-stone-400'>Completed List :</p>
 
               {
-                compList.map((value)=>{
+                compList.length===0 ? (<div className='text-lg font-semibold text-center text-stone-500'>No work alloted...</div>) : (
 
-                  return (<CompleteList key={value.id} value={value} crosslist={crossList}/>)
-                })
+                    compList.map((value)=>{
+                      return (<CompleteList key={value.id} value={value} crosslist={crossList} reverseList={reverseList}/>)
+                    })
+                    )
               }
 
             </div>
